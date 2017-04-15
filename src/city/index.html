@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>video landscape - city</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Video generated landscape"/>
+  <meta name="keywords" content="webgl, glsl, 3D, slitscan, video, art, landscape, procedural, hugohil"/>
+  <meta name="author" content="hugohil"/>
+  <meta name="copyright" content="zero"/>
+  <meta name="application-name" content="video-landscape"/>
+  <meta property="og:title" content="video-landscape"/>
+  <meta property="og:type" content="page"/>
+  <meta property="og:image" content="http://hugohil.github.io/video-landscape/picture.png"/>
+  <meta property="og:url" content="http://hugohil.github.io/video-landscape/"/>
+  <meta property="og:description" content="Video generated landscape"/>
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="video-landscape"/>
+  <meta name="twitter:description" content="Video generated landscape"/>
+  <meta name="twitter:image" content="http://hugohil.github.io/video-landscape/picture.png"/>
+  <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      /* gradient credits: https://webgradients.com/ */
+      /*background-image: linear-gradient(to top, #a8edea 0%, #fed6e3 100%);*/
+      background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
+      height: 100vh;
+      overflow: hidden;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <script src="../../lib/three.min.js"></script>
+  <script src="../../lib/stats.min.js"></script>
+
+  <script id="vert" type="x-shader/x-vertex">
+    varying vec2 vUv;
+    varying float scale;
+    uniform sampler2D texture;
+
+    void main () {
+      vUv = uv;
+      vec4 color = texture2D(texture, vUv);
+      scale = (color.r + color.g + color.b) * .333;
+
+      vec3 newPosition = vec3(position.x, position.y, -(scale * .5)) + normal;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+    }
+  </script>
+  <script id="frag" type="x-shader/x-fragment">
+    varying vec2 vUv;
+    varying float scale;
+    uniform sampler2D texture;
+
+    void main () {
+      vec4 color = texture2D(texture, vUv);
+      gl_FragColor = vec4(scale, scale, scale, floor(scale + .85));
+    }
+  </script>
+
+  <script src="./city.js"></script>
+</body>
+</html>
