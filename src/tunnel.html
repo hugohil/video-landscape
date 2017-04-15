@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>video landscape</title>
+  <title>video landscape - tunnel</title>
   <meta charset="utf-8">
   <meta name="description" content="Video generated landscape"/>
   <meta name="keywords" content="webgl, glsl, 3D, slitscan, video, art, landscape, procedural, hugohil"/>
@@ -17,12 +17,10 @@
   <meta name="twitter:title" content="video-landscape"/>
   <meta name="twitter:description" content="Video generated landscape"/>
   <meta name="twitter:image" content="http://hugohil.github.io/video-landscape/picture.png"/>
-  <link href="https://fonts.googleapis.com/css?family=Asar" rel="stylesheet">
   <style type="text/css">
     * {
       margin: 0;
       padding: 0;
-      font-family: 'Asar', serif;
     }
     body {
       /* gradient credits: https://webgradients.com/ */
@@ -31,36 +29,47 @@
       height: 100vh;
       overflow: hidden;
     }
-    h1, ul {
-      width: 80%;
-      margin: 5em auto 0;
-      text-align: center;
-    }
-    li {
-      font-size: 2em;
-      list-style-type: none;
-      color: #0A0A0A;
-      margin: 0 5px;
-      display: inline-block;
-    }
-    li:after {
-      content: '•';
-      margin-left: 15px;
-    }
-    li:last-child:after {
-      display: none;
-    }
-    a:link, a:visited, a:hover {
-      color:#0A0A0A;
-      text-decoration:none;
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <h1>video generated landscapes:</h1>
-  <ul>
-    <li><a href="./src/tunnel.html">tunnel</a></li>
-    <li><a href="./src/interactive.html">interactive</a></li>
-  </ul>
+  <script src="./lib/three.min.js"></script>
+  <script src="./lib/stats.min.js"></script>
+
+  <script id="vert" type="x-shader/x-vertex">
+    varying vec2 vUv;
+    varying float scale;
+    uniform sampler2D texture;
+
+    void main () {
+      vUv = uv;
+      vec4 color = texture2D(texture, vUv);
+      scale = (color.r + color.g + color.b) * .333;
+
+      vec3 newPosition = vec3(position.x, position.y, -(scale * .5)) + normal;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
+    }
+  </script>
+  <script id="frag" type="x-shader/x-fragment">
+    varying vec2 vUv;
+    varying float scale;
+    uniform sampler2D texture;
+
+    void main () {
+      // // this also produces instersting results
+      // vec4 color = texture2D(texture, vUv);
+      // gl_FragColor = vec4(color.rgb, scale + .1);
+      gl_FragColor = texture2D(texture, vUv);
+    }
+  </script>
+
+  <script src="./tunnel.js"></script>
 </body>
 </html>

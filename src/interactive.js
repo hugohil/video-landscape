@@ -7,7 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let distanceRation = 4
   let resolution = 256
 
-  video.src = './src/tunnel.mp4'
+  navigator.mediaDevices.getUserMedia({ video: true })
+  .then((stream) => {
+    video.srcObject = stream
+  }).catch((err) => {
+    console.error(err)
+  })
   video.autoplay = true
   video.preload = true
   video.muted = true
@@ -30,8 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.drawImage(video, 0, position, canvas.width, 1)
 
     if (position > canvas.height) {
-      // position = 0
-      video.pause()
+      position = 0
     } else {
       ++position
     }
@@ -50,9 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderer.setClearColor(0x0, 0)
   document.body.appendChild(renderer.domElement)
 
-
   var stats = new Stats()
-  document.body.appendChild(stats.dom)
+  if (document.location.href.indexOf('127.0.0.1') > -1) {
+    document.body.appendChild(stats.dom)
+  }
 
   const texture = new THREE.Texture(canvas)
   const vertexShader = document.querySelector('#vert').textContent
